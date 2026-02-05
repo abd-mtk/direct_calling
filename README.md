@@ -1,23 +1,23 @@
 # direct_calling
 
-A Flutter plugin for making direct phone calls on Android, iOS, and Web platforms. This plugin provides a simple and unified API to initiate phone calls across different platforms with proper permission handling.
+A Flutter plugin for making direct phone calls on Android and Web. This plugin provides a simple and unified API to initiate phone calls with proper permission handling.
 
 ## Features
 
-- 📱 **Cross-platform support**: Works on Android, iOS, and Web
-- 🔐 **Smart permission handling**: Automatically checks and requests permissions
+- 📱 **Android & Web**: Works on Android and Web
+- 🔐 **Smart permission handling**: Automatically checks and requests permissions on Android
 - 🎯 **Simple API**: Easy-to-use methods for making phone calls
 - ⚡ **Direct calls**: Makes direct calls on Android (with permission)
-- 📞 **Native integration**: Opens native Phone app on iOS
 - 🌐 **Web support**: Uses tel: links for web browsers
+- 📵 **iOS**: Not supported; methods return `false` without doing anything (no crash)
 
 ## Platform Support
 
 | Platform | Support | Behavior                                                   |
 | -------- | ------- | ---------------------------------------------------------- |
 | Android  | ✅      | Makes direct phone call (requires `CALL_PHONE` permission) |
-| iOS      | ✅      | Opens Phone app with number pre-filled                     |
-| Web      | ✅      | Opens tel: link (browser-dependent)                        |
+| Web      | ✅      | Opens tel: link (browser-dependent)                       |
+| iOS      | ❌      | No-op; returns `false` (calling not supported)             |
 | Other    | ❌      | Throws `UnsupportedError`                                  |
 
 ## Installation
@@ -52,7 +52,7 @@ Add the `CALL_PHONE` permission to your `android/app/src/main/AndroidManifest.xm
 
 ### iOS
 
-No additional setup required. The plugin uses `tel:` URLs which don't require special permissions on iOS.
+Not supported. On iOS, all methods return `false` without performing any action (no native code, no Podfile required).
 
 ### Web
 
@@ -178,8 +178,8 @@ Makes a phone call to the specified phone number.
 **Platform behavior:**
 
 - **Android**: Makes a direct call (requires `CALL_PHONE` permission)
-- **iOS**: Opens the Phone app with the number pre-filled
 - **Web**: Opens a tel: link
+- **iOS**: Not supported; returns `false`
 
 ---
 
@@ -194,8 +194,8 @@ Checks if the device can make phone calls.
 **Platform behavior:**
 
 - **Android**: Checks if `CALL_PHONE` permission is granted
-- **iOS**: Checks if device can make phone calls (always returns `true` if device supports calls)
 - **Web**: Always returns `true`
+- **iOS**: Not supported; returns `false`
 - **Other**: Returns `false`
 
 ---
@@ -211,8 +211,8 @@ Requests permission to make phone calls.
 **Platform behavior:**
 
 - **Android**: Shows permission dialog for `CALL_PHONE` permission
-- **iOS**: Returns `true` (no permission needed for tel: URLs)
 - **Web**: Returns `true` (no permission needed for tel: URLs)
+- **iOS**: Not supported; returns `false`
 - **Other**: Returns `false`
 
 ---
@@ -237,8 +237,8 @@ Smart call method that automatically handles permissions before making a call.
 **Platform behavior:**
 
 - **Android**: Checks permission → requests if needed → makes direct call
-- **iOS**: Directly makes the call (no permission needed)
 - **Web**: Directly makes the call (no permission needed)
+- **iOS**: Not supported; returns `false`
 
 ## Phone Number Formats
 
@@ -280,10 +280,8 @@ try {
 
 ### iOS
 
-- No special permissions required
-- Opens the native Phone app with the number pre-filled
-- User must tap the call button in the Phone app
-- Works on all iOS devices that support phone calls
+- **Not supported.** All methods return `false` without performing any action.
+- No native iOS code or CocoaPods setup is required.
 
 ### Web
 
@@ -297,7 +295,7 @@ try {
 - Flutter SDK: `>=3.0.0`
 - Dart SDK: `>=3.7.0 <4.0.0`
 - Android: Minimum SDK 24
-- iOS: iOS 10.0 or higher
+- iOS: Not supported (methods return `false`)
 
 ## Contributing
 

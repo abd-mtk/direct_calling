@@ -13,11 +13,10 @@ class DirectCalling {
 
   /// Makes a phone call to the specified phone number
   /// - Android: Makes a direct call (requires CALL_PHONE permission)
-  /// - iOS: Opens the Phone app with the number pre-filled
   /// - Web: Opens tel: link (browser-dependent)
+  /// - iOS: Not supported; returns false without doing anything
   static Future<bool> makeCall(String phoneNumber) async {
     if (kIsWeb) {
-      // Web implementation
       try {
         return makeCallWeb(phoneNumber);
       } catch (e) {
@@ -25,9 +24,12 @@ class DirectCalling {
       }
     }
 
-    if (!isAndroid && !isIOS) {
+    // iOS: calling not supported; do nothing
+    if (isIOS) return false;
+
+    if (!isAndroid) {
       throw UnsupportedError(
-        'Phone call is only supported on Android, iOS, and Web platforms',
+        'Phone call is only supported on Android and Web platforms',
       );
     }
 
@@ -43,17 +45,13 @@ class DirectCalling {
 
   /// Checks if the device can make phone calls
   /// - Android: Checks if CALL_PHONE permission is granted
-  /// - iOS: Checks if device can make phone calls (no permission needed)
   /// - Web: Returns true (tel: links are supported in browsers)
+  /// - iOS: Not supported; returns false
   static Future<bool> checkPermission() async {
-    if (kIsWeb) {
-      // On web, tel: links are generally supported
-      return true;
-    }
+    if (kIsWeb) return true;
+    if (isIOS) return false;
 
-    if (!isAndroid && !isIOS) {
-      return false;
-    }
+    if (!isAndroid) return false;
 
     try {
       final bool result = await _channel.invokeMethod('checkPermission');
@@ -65,17 +63,13 @@ class DirectCalling {
 
   /// Requests permission to make phone calls
   /// - Android: Requests CALL_PHONE permission
-  /// - iOS: Returns true (no permission needed for tel: URLs)
   /// - Web: Returns true (no permission needed for tel: URLs)
+  /// - iOS: Not supported; returns false
   static Future<bool> requestPermission() async {
-    if (kIsWeb) {
-      // On web, tel: links don't require permissions
-      return true;
-    }
+    if (kIsWeb) return true;
+    if (isIOS) return false;
 
-    if (!isAndroid && !isIOS) {
-      return false;
-    }
+    if (!isAndroid) return false;
 
     try {
       final bool result = await _channel.invokeMethod('requestPermission');
@@ -87,38 +81,25 @@ class DirectCalling {
 
   /// Smart call method that checks permission and makes call
   /// - Android: Checks/requests CALL_PHONE permission, then makes direct call
-  /// - iOS: Opens Phone app with number pre-filled (no permission needed)
   /// - Web: Opens tel: link (browser-dependent)
+  /// - iOS: Not supported; returns false without doing anything
   static Future<bool> smartCall(String phoneNumber) async {
-    if (kIsWeb) {
-      // On web, directly make the call (no permission needed)
-      return await makeCall(phoneNumber);
-    }
+    if (kIsWeb) return await makeCall(phoneNumber);
+    if (isIOS) return false;
 
-    if (!isAndroid && !isIOS) {
+    if (!isAndroid) {
       throw UnsupportedError(
-        'Phone call is only supported on Android, iOS, and Web platforms',
+        'Phone call is only supported on Android and Web platforms',
       );
     }
 
-    // On iOS, no permission is needed, so we can directly make the call
-    if (isIOS) {
-      return await makeCall(phoneNumber);
-    }
-
-    // On Android, check if permission is already granted
     bool hasPermission = await checkPermission();
-
     if (!hasPermission) {
-      // Request permission
       hasPermission = await requestPermission();
-
       if (!hasPermission) {
         throw Exception('Call permission was denied');
       }
     }
-
-    // Make the call
     return await makeCall(phoneNumber);
   }
 }

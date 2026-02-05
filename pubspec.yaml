@@ -1,6 +1,6 @@
 name: direct_calling
-description: A Flutter plugin for making direct phone calls (Android, iOS & Web)
-version: 1.2.1
+description: A Flutter plugin for making direct phone calls (Android & Web). iOS not supported.
+version: 1.2.2
 publish_to: none
 
 environment:
@@ -22,6 +22,4 @@ flutter:
     platforms:
       android:
         package: com.direct_calling
-        pluginClass: DirectCallingPlugin
-      ios:
         pluginClass: DirectCallingPlugin
